@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            width: 1200px;
+            margin: 50px auto;
+        }
+
+        .left-box {
+            width: 450px;
+            height: 320px;
+            float: left;
+        }
+
+        .img-box {
+            width: 450px;
+            height: 250px;
+            position: relative;
+        }
+
+        .mask {
+            width: 150px;
+            height: 150px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, .6);
+            display: none;
+        }
+
+        .right-box {
+            width: 700px;
+            height:400px;
+            float: left;
+            overflow: hidden;
+            position: relative;
+            display: none;
+        }
+
+        .right-box img {
+            width: 1200px;
+            height: 1000px;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .clear-fix {
+            clear: both;
+        }
+
+        ul {
+            list-style: none;
+            width: 450px;
+            margin-top: 15px;
+        }
+
+        li {
+            width: 95px;
+            height: 60px;
+            float: left;
+            margin-right: 5px;
+            border: 5px solid transparent;
+        }
+
+        ul img {
+            width: 95px;
+            height: 60px;
+        }
+
+        .active {
+            /*border: 5px solid #8c610d;*/
+            border-color: #8c610d;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="left-box">
+        <div class="img-box">
+            <img src="imags/1.jpg">
+            <div class="mask"></div>
+        </div>
+        <div class="clear-fix"></div>
+        <ul>
+            <li  class="active"><img data-index="0" src="imags/1.jpg"></li>
+            <li><img   data-index="1" src="imags/2.jpg"></li>
+            <li ><img  data-index="2" src="imags/3.jpg"></li>
+            <li ><img data-index="3" src="imags/4.jpg"></li>
+        </ul>
+    </div>
+    <div class="right-box">
+        <img src="imags/1.jpg">
+    </div>
+</div>
+</body>
+<script>
+    var imgBox = document.querySelector('.img-box');
+    var rightBox = document.querySelector('.right-box');
+    var mask = document.querySelector('.mask');
+    var smallPic = document.querySelector('.left-box img');
+    var bigPic = document.querySelector('.right-box img');
+    var ul = document.querySelector('ul');
+    var lis = document.querySelectorAll('li');
+    // for(var i=0;i<lis.length;i++){
+    //     lis[i].index=i;
+    //     lis[i].onclick=function () {
+    //        var imgsrc=lis[this.index].firstElementChild.getAttribute('src');
+    //        smallPic.setAttribute('src',imgsrc);
+    //        bigPic.setAttribute('src',imgsrc);
+    //        for(var j=0;j<lis.length;j++){
+    //            lis[j].removeAttribute('class');
+    //        }
+    //        lis[this.index].setAttribute('class','active')
+    //     }
+    // }
+    ul.addEventListener('click', function (e) {
+        if (e.srcElement.nodeName.toLowerCase() === 'img') {
+            var lis = e.srcElement;
+            console.log(lis.dataset.index)
+            var address = lis.getAttribute('src');
+            smallPic.setAttribute('src', address);
+            bigPic.setAttribute('src', address);
+            for (var i = 0; i < ul.children.length; i++) {
+                ul.children[i].removeAttribute('class')
+
+            }
+            // lis.parentNode.setAttribute('class','active');
+            lis.parentNode.className = 'active'
+        }else {
+            var lis = e.srcElement.firstElementChild;
+            var address = lis.getAttribute('src');
+            smallPic.setAttribute('src', address);
+            bigPic.setAttribute('src', address);
+            for (var i = 0; i < ul.children.length; i++) {
+                ul.children[i].removeAttribute('class')
+
+            }
+            // lis.parentNode.setAttribute('class','active');
+            lis.parentNode.className = 'active'
+        }
+
+
+    });
+    imgBox.addEventListener('mouseover', function () {
+        mask.style.display = 'block';
+        rightBox.style.display = 'block';
+
+    });
+    imgBox.addEventListener('mouseout', function () {
+        mask.style.display = 'none';
+        rightBox.style.display = 'none';
+    });
+    imgBox.addEventListener('mousemove', function (e) {
+        var ev = e || event;
+        // 用鼠标的的位置-左侧的大盒子的距离浏览器的左边的距离-减去遮罩层的一半的距离
+        // 就是遮罩层可以移动的距离
+        var left = ev.x - imgBox.offsetLeft - mask.offsetWidth / 2;
+        var top = ev.y - imgBox.offsetTop - mask.offsetHeight / 2;
+        left = left < 0 ? 0 : left;
+        top = top < 0 ? 0 : top;
+        left = left > imgBox.offsetWidth - mask.offsetWidth ? imgBox.offsetWidth - mask.offsetWidth : left;
+        top = top > imgBox.offsetHeight - mask.offsetHeight ? imgBox.offsetHeight - mask.offsetWidth : top;
+        mask.style.left = left + 'px';
+        mask.style.top = top + 'px';
+        var fenx = left / (imgBox.offsetWidth - mask.offsetWidth);
+        var feny = top / (imgBox.offsetHeight - mask.offsetHeight);
+        bigPic.style.left = -fenx * (bigPic.offsetWidth - rightBox.offsetWidth) + 'px';
+        bigPic.style.top = -feny * (bigPic.offsetHeight - rightBox.offsetHeight) + 'px';
+    });
+</script>
+</html>
